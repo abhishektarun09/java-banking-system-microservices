@@ -116,6 +116,5 @@ public class AccountService {
 
         log.info("Credited balance in account: {}", accountNumber);
 
-
     }
 }
