@@ -77,4 +77,26 @@ public class AccountService {
 
         log.info("Account blocked: {}", accountNumber);
     }
+
+    public void deductBalance(String accountNumber, BigDecimal amount) {
+
+        log.info("Deducting balance from account: {}", accountNumber);
+
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        if(account.getAccountStatus() != AccountStatus.ACTIVE){
+            throw new RuntimeException("Account is NOT active "+accountNumber);
+        }
+
+        if(account.getBalance().compareTo(amount) < 0){
+            throw new RuntimeException("Insufficient balance in account: "+accountNumber);
+        }
+
+        account.setBalance(account.getBalance().subtract(amount));
+        accountRepository.save(account);
+
+        log.info("Deducted balance from account: {}", accountNumber);
+
+    }
 }

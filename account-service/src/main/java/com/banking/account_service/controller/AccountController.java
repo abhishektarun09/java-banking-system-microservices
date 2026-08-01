@@ -50,17 +50,18 @@ public class AccountController {
 
         return ResponseEntity.ok("Account blocked successfully");
     }
-//
-////    SAGA Step 1 - Deduct Balance
-////    Called by Transaction Service when transfer is initiated
-//
-//    public ResponseEntity<String> deductBalance(
-//            @PathVariable String accountNumber,
-//            @RequestParam BigDecimal amount
-//    ){
-//        accountService.deductBalance(accountNumber, amount);
-//        return ResponseEntity.ok("Balance deducted successfully");
-//    }
+
+//    SAGA Step 1 - Deduct Balance
+//    Called by Transaction Service when transfer is initiated
+
+    @PutMapping("/{accountNumber}/deduct")
+    public ResponseEntity<String> deductBalance(
+            @PathVariable String accountNumber,
+            @RequestParam BigDecimal amount
+    ){
+        accountService.deductBalance(accountNumber, amount);
+        return ResponseEntity.ok("Balance deducted successfully");
+    }
 //
 ////    SAGA STEP 4 - Compensating transaction endpoint
 ////    Called by Transaction service if:
