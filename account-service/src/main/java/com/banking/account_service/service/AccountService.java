@@ -3,6 +3,7 @@ package com.banking.account_service.service;
 import com.banking.account_service.dto.AccountRequestDTO;
 import com.banking.account_service.dto.AccountResponseDTO;
 import com.banking.account_service.entity.Account;
+import com.banking.account_service.entity.AccountStatus;
 import com.banking.account_service.mapper.AccountMapper;
 import com.banking.account_service.repository.AccountRepository;
 import jakarta.validation.Valid;
@@ -62,5 +63,18 @@ public class AccountService {
         Account account = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new RuntimeException("Account not found"));
         return account.getBalance();
+    }
+
+    public void blockAccount(String accountNumber) {
+
+        log.info("Blocking account: {}", accountNumber);
+
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        account.setAccountStatus(AccountStatus.BLOCKED);
+        accountRepository.save(account);
+
+        log.info("Account blocked: {}", accountNumber);
     }
 }

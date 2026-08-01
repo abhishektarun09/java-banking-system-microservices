@@ -41,15 +41,15 @@ public class AccountController {
 
         return ResponseEntity.ok(accountService.getBalance(accountNumber));
     }
-//
-//    @PutMapping("/{accountNumber}/block")
-//    public ResponseEntity<String> blockAccount(
-//            @PathVariable String accountNumber){
-//
-//        accountService.blockAccount(accountNumber);
-//
-//        return ResponseEntity.ok("Account blocked successfully");
-//    }
+
+    @PutMapping("/{accountNumber}/block")
+    public ResponseEntity<String> blockAccount(
+            @PathVariable String accountNumber){
+
+        accountService.blockAccount(accountNumber);
+
+        return ResponseEntity.ok("Account blocked successfully");
+    }
 //
 ////    SAGA Step 1 - Deduct Balance
 ////    Called by Transaction Service when transfer is initiated
