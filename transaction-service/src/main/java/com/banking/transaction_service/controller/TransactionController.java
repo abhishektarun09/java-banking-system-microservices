@@ -43,16 +43,16 @@ public class TransactionController {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(transactionService.getTransactionHistory(accountNumber));
     }
-
-    @PostMapping("/{transactionId}/verify")
-    public ResponseEntity<TransactionResponseDTO> verifyOTP(
-            @PathVariable String transactionId,
-            @RequestParam String otp
-    ){
-        log.info("OTP verification request - transaction: {}", transactionId);
-
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(transactionService.verifyOTP(transactionId, otp));
-    }
+//
+//    @PostMapping("/{transactionId}/verify")
+//    public ResponseEntity<TransactionResponseDTO> verifyOTP(
+//            @PathVariable String transactionId,
+//            @RequestParam String otp
+//    ){
+//        log.info("OTP verification request - transaction: {}", transactionId);
+//
+//        return ResponseEntity.status(HttpStatus.OK)
+//                .body(transactionService.verifyOTP(transactionId, otp));
+//    }
 
 }

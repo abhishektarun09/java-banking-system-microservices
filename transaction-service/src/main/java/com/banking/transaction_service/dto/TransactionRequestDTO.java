@@ -1,7 +1,8 @@
 package com.banking.transaction_service.dto;
 
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,8 +20,8 @@ public class TransactionRequestDTO {
     @NotBlank(message = "Receiver account number is required")
     private String receiverAccountNumber;
 
-    @NotBlank(message = "Amount is required")
-    @Positive(message = "Invalid amount")
+    @NotNull(message = "Amount is required")
+    @DecimalMin(value = "0.01", message = "Amount must be at least 0.01")
     private BigDecimal amount;
 
     private String description;
