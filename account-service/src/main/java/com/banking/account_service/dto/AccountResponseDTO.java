@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class AccountResponseDTO {
 
-    private String id;
     private String accountNumber;
     private String accountHolderName;
     private String email;
