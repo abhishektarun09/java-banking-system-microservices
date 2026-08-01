@@ -28,12 +28,12 @@ public class AccountController {
                 .body(accountService.createAccount(requestDTO));
     }
 
-//    @GetMapping("/{accountNumber}")
-//    public ResponseEntity<AccountResponseDTO> getAccount(
-//            @PathVariable String accountNumber){
-//
-//        return ResponseEntity.ok(accountService.getAccount(accountNumber));
-//    }
+    @GetMapping("/{accountNumber}")
+    public ResponseEntity<AccountResponseDTO> getAccount(
+            @PathVariable String accountNumber){
+
+        return ResponseEntity.ok(accountService.getAccount(accountNumber));
+    }
 //
 //    @GetMapping("/{accountNumber}/balance")
 //    public ResponseEntity<BigDecimal> getBalance(

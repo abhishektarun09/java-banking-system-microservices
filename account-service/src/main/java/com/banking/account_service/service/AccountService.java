@@ -11,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,5 +50,11 @@ public class AccountService {
         }while(accountRepository.existsByAccountNumber(accountNumber));
 
         return accountNumber;
+    }
+
+    public AccountResponseDTO getAccount(String accountNumber) {
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        return accountMapper.toDto(account);
     }
 }
