@@ -34,13 +34,13 @@ public class AccountController {
 
         return ResponseEntity.ok(accountService.getAccount(accountNumber));
     }
-//
-//    @GetMapping("/{accountNumber}/balance")
-//    public ResponseEntity<BigDecimal> getBalance(
-//            @PathVariable String accountNumber){
-//
-//        return ResponseEntity.ok(accountService.getBalance(accountNumber));
-//    }
+
+    @GetMapping("/{accountNumber}/balance")
+    public ResponseEntity<BigDecimal> getBalance(
+            @PathVariable String accountNumber){
+
+        return ResponseEntity.ok(accountService.getBalance(accountNumber));
+    }
 //
 //    @PutMapping("/{accountNumber}/block")
 //    public ResponseEntity<String> blockAccount(
