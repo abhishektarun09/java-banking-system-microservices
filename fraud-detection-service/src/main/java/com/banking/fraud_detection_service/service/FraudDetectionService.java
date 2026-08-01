@@ -4,12 +4,15 @@ import com.banking.fraud_detection_service.client.AccountServiceClient;
 import com.banking.fraud_detection_service.model.FraudCheckResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
@@ -18,6 +21,10 @@ public class FraudDetectionService {
 
     private final AccountServiceClient accountServiceClient;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final RedisTemplate<String, String> redisTemplate;
+
+    @Value("${fraud.max-transactions-per-minute}")
+    private int maxTransactionsPerMinute;
 
     private static final String VERIFICATION_REQUIRED_TOPIC = "verification.required";
     private static final String FRAUD_CHECK_CLEAN_EVENT_TOPIC = "fraud.check.clean";
@@ -81,5 +88,19 @@ public class FraudDetectionService {
         }
 
         return new FraudCheckResult(false, null);
+    }
+
+    private boolean isVelocityExceeded(String accountNumber) {
+        String key = "fraud:velocity:" + accountNumber;
+        Long count = redisTemplate.opsForValue().increment(key);
+
+        if(count != null && count == 1){
+            redisTemplate.expire(key,60, TimeUnit.SECONDS);
+        }
+
+        log.info("Velocity check - account: {} count: {}/{}",
+                accountNumber, count, maxTransactionsPerMinute);
+
+        return count != null && count > maxTransactionsPerMinute;
     }
 }
