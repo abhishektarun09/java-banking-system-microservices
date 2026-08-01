@@ -28,52 +28,52 @@ public class AccountController {
                 .body(accountService.createAccount(requestDTO));
     }
 
-    @GetMapping("/{accountNumber}")
-    public ResponseEntity<AccountResponseDTO> getAccount(
-            @PathVariable String accountNumber){
-
-        return ResponseEntity.ok(accountService.getAccount(accountNumber));
-    }
-
-    @GetMapping("/{accountNumber}/balance")
-    public ResponseEntity<BigDecimal> getBalance(
-            @PathVariable String accountNumber){
-
-        return ResponseEntity.ok(accountService.getBalance(accountNumber));
-    }
-
-    @PutMapping("/{accountNumber}/block")
-    public ResponseEntity<String> blockAccount(
-            @PathVariable String accountNumber){
-
-        accountService.blockAccount(accountNumber);
-
-        return ResponseEntity.ok("Account blocked successfully");
-    }
-
-//    SAGA Step 1 - Deduct Balance
-//    Called by Transaction Service when transfer is initiated
-
-    public ResponseEntity<String> deductBalance(
-            @PathVariable String accountNumber,
-            @RequestParam BigDecimal amount
-    ){
-        accountService.deductBalance(accountNumber, amount);
-        return ResponseEntity.ok("Balance deducted successfully")
-    }
-
-//    SAGA STEP 4 - Compensating transaction endpoint
-//    Called by Transaction service if:
-//    1. Fraud detected - refund sender (undo step 1)
-//    2. Transaction Completed - credit receiver
-
-    @PutMapping("/{accountNumber}/credit")
-    public ResponseEntity<String> creditBalance(
-            @PathVariable String accountNumber,
-            @RequestParam BigDecimal amount
-    ){
-        accountService.creditBalance(accountNumber, amount);
-        return ResponseEntity.ok("BALANCE CREDITED SUCCESSFULLY")
-    }
+//    @GetMapping("/{accountNumber}")
+//    public ResponseEntity<AccountResponseDTO> getAccount(
+//            @PathVariable String accountNumber){
+//
+//        return ResponseEntity.ok(accountService.getAccount(accountNumber));
+//    }
+//
+//    @GetMapping("/{accountNumber}/balance")
+//    public ResponseEntity<BigDecimal> getBalance(
+//            @PathVariable String accountNumber){
+//
+//        return ResponseEntity.ok(accountService.getBalance(accountNumber));
+//    }
+//
+//    @PutMapping("/{accountNumber}/block")
+//    public ResponseEntity<String> blockAccount(
+//            @PathVariable String accountNumber){
+//
+//        accountService.blockAccount(accountNumber);
+//
+//        return ResponseEntity.ok("Account blocked successfully");
+//    }
+//
+////    SAGA Step 1 - Deduct Balance
+////    Called by Transaction Service when transfer is initiated
+//
+//    public ResponseEntity<String> deductBalance(
+//            @PathVariable String accountNumber,
+//            @RequestParam BigDecimal amount
+//    ){
+//        accountService.deductBalance(accountNumber, amount);
+//        return ResponseEntity.ok("Balance deducted successfully");
+//    }
+//
+////    SAGA STEP 4 - Compensating transaction endpoint
+////    Called by Transaction service if:
+////    1. Fraud detected - refund sender (undo step 1)
+////    2. Transaction Completed - credit receiver
+//
+//    @PutMapping("/{accountNumber}/credit")
+//    public ResponseEntity<String> creditBalance(
+//            @PathVariable String accountNumber,
+//            @RequestParam BigDecimal amount
+//    ){
+//        accountService.creditBalance(accountNumber, amount);
+//        return ResponseEntity.ok("BALANCE CREDITED SUCCESSFULLY");
+//    }
 
 }
