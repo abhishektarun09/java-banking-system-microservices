@@ -99,4 +99,23 @@ public class AccountService {
         log.info("Deducted balance from account: {}", accountNumber);
 
     }
+
+    public void creditBalance(String accountNumber, BigDecimal amount) {
+
+        log.info("Crediting balance in account: {}", accountNumber);
+
+        Account account = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+
+        if(account.getAccountStatus() != AccountStatus.ACTIVE){
+            throw new RuntimeException("Account is NOT active "+accountNumber);
+        }
+
+        account.setBalance(account.getBalance().add(amount));
+        accountRepository.save(account);
+
+        log.info("Credited balance in account: {}", accountNumber);
+
+
+    }
 }
