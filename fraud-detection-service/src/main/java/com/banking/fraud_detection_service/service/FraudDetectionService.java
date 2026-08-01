@@ -10,6 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +26,9 @@ public class FraudDetectionService {
 
     @Value("${fraud.max-transactions-per-minute}")
     private int maxTransactionsPerMinute;
+
+    @Value("${fraud.suspicious-amount-multiplier}")
+    private double suspiciousAmountMultiplier;
 
     private static final String VERIFICATION_REQUIRED_TOPIC = "verification.required";
     private static final String FRAUD_CHECK_CLEAN_EVENT_TOPIC = "fraud.check.clean";
@@ -77,7 +81,7 @@ public class FraudDetectionService {
         }
 
         //2. Amount check
-        if(isAmountSuspicious(accountNumber)){
+        if(isAmountSuspicious(accountNumber, amount)){
             return new FraudCheckResult(true, "Amount check failed. Exceeds 3x average");
         }
 
@@ -88,6 +92,31 @@ public class FraudDetectionService {
         }
 
         return new FraudCheckResult(false, null);
+    }
+
+    private boolean isAmountSuspicious(String accountNumber, BigDecimal amount) {
+        String avgKey = "fraud:avg_amount:" + accountNumber;
+        String avgStr = redisTemplate.opsForValue().get(avgKey);
+
+        if(avgStr == null){
+            redisTemplate.opsForValue().set(avgKey, amount.toString());
+            return false;
+        }
+
+        BigDecimal avgAmount = new BigDecimal(avgStr);
+        BigDecimal threshold = avgAmount.multiply(BigDecimal.valueOf(suspiciousAmountMultiplier));
+
+        //update running avg
+        BigDecimal newAvg = avgAmount.add(amount)
+                .divide(BigDecimal.valueOf(2), 2, RoundingMode.HALF_UP);
+
+        redisTemplate.opsForValue().set(avgKey, newAvg.toString());
+
+        log.info("Amount check = amount: {} threshold: {} suspicious: {}",
+                amount, threshold, amount.compareTo(threshold) > 0);
+
+        return amount.compareTo(threshold) > 0;
+
     }
 
     private boolean isVelocityExceeded(String accountNumber) {
