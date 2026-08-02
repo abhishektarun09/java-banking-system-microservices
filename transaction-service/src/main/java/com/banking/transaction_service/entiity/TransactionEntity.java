@@ -48,6 +48,5 @@ public class TransactionEntity {
     @CreationTimestamp
     private LocalDateTime createdAt;
 
-    @CreationTimestamp
     private LocalDateTime completedAt;
 }
