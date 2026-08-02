@@ -3,6 +3,7 @@ package com.banking.payment_service.controller;
 import com.banking.payment_service.dto.CreatePaymentRequestDTO;
 import com.banking.payment_service.dto.PaymentOrderResponseDTO;
 import com.banking.payment_service.service.PaymentService;
+import com.razorpay.RazorpayException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,20 +27,19 @@ public class PaymentController {
     @PostMapping("/create-order")
     public ResponseEntity<PaymentOrderResponseDTO> createPaymentOrder(
             @Valid @RequestBody CreatePaymentRequestDTO requestDTO
-            )
-    {
+            ) throws RazorpayException {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(paymentService.createPaymentOrder(requestDTO));
     }
 
-    // Razorpay
-    @PostMapping("/webhook")
-    public ResponseEntity<String> handleWebhook(
-            @RequestBody Map<String, Object> payload
-            )
-    {
-        paymentService.handleWebhook(payload);
-
-        return ResponseEntity.ok("Webhook processed")
-    }
+//    // Razorpay
+//    @PostMapping("/webhook")
+//    public ResponseEntity<String> handleWebhook(
+//            @RequestBody Map<String, Object> payload
+//            )
+//    {
+//        paymentService.handleWebhook(payload);
+//
+//        return ResponseEntity.ok("Webhook processed")
+//    }
 }
