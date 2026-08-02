@@ -196,4 +196,15 @@ public class TransactionService {
 
         log.info("SAGA compensation completed - refunded to {}", transactionEntity.getSenderAccountNumber());
     }
+
+    public void processCleanResult(String transactionId) {
+        TransactionEntity transactionEntity = transactionRepository.findById(transactionId)
+                .orElseThrow(()-> new RuntimeException("Transaction not found "+transactionId));
+
+        if(transactionEntity.getTransactionStatus() != TransactionStatus.PROCESSING){
+            return;
+        }
+
+        completeTransaction(transactionEntity);
+    }
 }
