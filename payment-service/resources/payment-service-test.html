@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Portal</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #1f2937;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #4f46e5;
+        }
+        #error-msg {
+            color: #ef4444;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Make a Payment</h2>
+    <form id="payment-form">
+        <div class="form-group">
+            <label for="accountNumber">Account Number</label>
+            <input type="text" id="accountNumber" placeholder="e.g., ACC-123456" required value="ACC-123456">
+        </div>
+
+        <div class="form-group">
+            <label for="amount">Amount (USD)</label>
+            <input type="number" id="amount" step="0.01" placeholder="e.g., 50.00" required value="25.00">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <input type="text" id="description" placeholder="e.g., Monthly Subscription" required value="Test Payment Order">
+        </div>
+
+        <button type="submit" id="pay-btn">Proceed to Pay</button>
+        <div id="error-msg"></div>
+    </form>
+</div>
+
+<!-- Razorpay Checkout Script -->
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById('payment-form').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const payBtn = document.getElementById('pay-btn');
+        const errorMsg = document.getElementById('error-msg');
+        errorMsg.textContent = '';
+        payBtn.disabled = true;
+        payBtn.textContent = 'Processing...';
+
+        const payload = {
+            accountNumber: document.getElementById('accountNumber').value,
+            amount: parseFloat(document.getElementById('amount').value),
+            description: document.getElementById('description').value
+        };
+
+        try {
+            // 1. Send request to Spring Boot backend to create order
+            const response = await fetch('http://localhost:8080/api/v1/payment/create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to create payment order on backend.');
+            }
+
+            const data = await response.json();
+
+            // 2. Open Razorpay Checkout modal with returned details
+            const options = {
+                "key": data.razorpayKey,
+                "amount": data.amount * 100, // Converted to minor units (cents)
+                "currency": data.currency,
+                "name": "Banking Payment Service",
+                "description": payload.description,
+                "order_id": data.razorpayOrderId,
+                "handler": function (response) {
+                    alert("Payment successful! Payment ID: " + response.razorpay_payment_id);
+                    console.log("Success Response:", response);
+                },
+                "prefill": {
+                    "name": "Test User",
+                    "email": "user@example.com",
+                    "contact": "9999999999"
+                },
+                "theme": {
+                    "color": "#6366f1"
+                }
+            };
+
+            const rzp = new Razorpay(options);
+            rzp.open();
+
+        } catch (err) {
+            errorMsg.textContent = err.message;
+            console.error(err);
+        } finally {
+            payBtn.disabled = false;
+            payBtn.textContent = 'Proceed to Pay';
+        }
+    });
+</script>
+</body>
+</html>
