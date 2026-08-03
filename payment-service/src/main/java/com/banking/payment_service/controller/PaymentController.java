@@ -32,14 +32,14 @@ public class PaymentController {
                 .body(paymentService.createPaymentOrder(requestDTO));
     }
 
-//    // Razorpay
-//    @PostMapping("/webhook")
-//    public ResponseEntity<String> handleWebhook(
-//            @RequestBody Map<String, Object> payload
-//            )
-//    {
-//        paymentService.handleWebhook(payload);
-//
-//        return ResponseEntity.ok("Webhook processed")
-//    }
+    // Razorpay
+    @PostMapping("/webhook")
+    public ResponseEntity<String> handleWebhook(
+            @RequestBody Map<String, Object> payload
+            )
+    {
+        paymentService.handleWebhook(payload);
+
+        return ResponseEntity.ok("Webhook processed");
+    }
 }

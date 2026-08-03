@@ -16,6 +16,6 @@ public class PaymentOrderResponseDTO {
     private BigDecimal amount;
     private String currency;
     private String status;
-    private String razorpayKeyId;
+    private String razorpayKey;
 
 }
